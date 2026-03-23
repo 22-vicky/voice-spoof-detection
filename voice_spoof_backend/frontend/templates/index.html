@@ -1,0 +1,133 @@
+<!-- {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Voice Analysis</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Voice Spoof Detection - Analysis</h1>
+        <input type="file" id="audioInput" accept=".wav,.flac,.mp3">
+        <button id="checkBtn">Check Voice</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const button = document.getElementById("checkBtn");
+        const fileInput = document.getElementById("audioInput");
+        const resultDiv = document.getElementById("result");
+
+        button.addEventListener("click", async function () {
+            const file = fileInput.files[0];
+            if (!file) {
+                resultDiv.innerHTML = "Please select an audio file.";
+                return;
+            }
+            const formData = new FormData();
+            formData.append("audio", file);
+
+            resultDiv.innerHTML = "Processing...";
+
+            try {
+                const response = await fetch("/predict/", {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    resultDiv.innerHTML = "Error: " + data.error;
+                } else {
+                    resultDiv.innerHTML =
+                        "<b>Prediction:</b> " + data.prediction + "<br>" +
+                        "<b>Confidence:</b> " + (data.confidence * 100).toFixed(2) + "%";
+                }
+            } catch (error) {
+                resultDiv.innerHTML = "Server connection failed!";
+                console.error(error);
+            }
+        });
+    });
+    </script>
+</body>
+</html> -->
+
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Spoof Detection - Analysis</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+
+<div class="container">
+    <h1>Voice Spoof Detection - Analysis</h1>
+    <p>Upload a <b>.wav</b> or <b>.flac</b> file to check if it is Genuine or Spoofed.</p>
+
+    <input type="file" id="audioInput" accept=".wav,.flac">
+    <button id="checkBtn">Check Voice</button>
+
+    <div id="result" class="result"></div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const predictUrl = "{% url 'predict' %}";
+    const button = document.getElementById("checkBtn");
+    const fileInput = document.getElementById("audioInput");
+    const resultDiv = document.getElementById("result");
+
+    button.addEventListener("click", async function () {
+
+        console.log("Button clicked");
+
+        const file = fileInput.files[0];
+
+        if (!file) {
+            resultDiv.innerHTML = "Please select a file.";
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("audio", file);
+
+        resultDiv.innerHTML = "Processing...";
+
+        try {
+            const response = await fetch(predictUrl, {
+                method: "POST",
+                body: formData
+            });
+
+            const text = await response.text();
+            console.log("Raw response:", text);
+
+            const data = JSON.parse(text);
+
+            if (data.error) {
+                resultDiv.innerHTML = "Error: " + data.error;
+            } else {
+                resultDiv.innerHTML =
+                    "<b>Prediction:</b> " + data.prediction + "<br>" +
+                    "<b>Accuracy:</b> " + (data.confidence * 100).toFixed(2) + "%";
+            }
+
+        } catch (err) {
+            console.error(err);
+            resultDiv.innerHTML = "Server connection failed!";
+        }
+    });
+});
+</script>
+
+</body>
+</html>

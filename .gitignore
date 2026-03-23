@@ -1,0 +1,28 @@
+# Ignore datasets
+dataset/
+data/
+audio/
+flac/
+wav/
+*.flac
+*.wav
+*.mp3
+*.zip
+*.rar
+
+# Python
+__pycache__/
+*.pyc
+
+# Models
+*.h5
+*.pkl
+*.model
+
+# Environment
+.env
+
+# Phase 1 ML data
+phase1_ml/dataset/
+phase1_ml/LA/
+phase1_ml/train_list.csv
